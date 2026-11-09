@@ -1,0 +1,3 @@
+SELECT TOP 10 *
+FROM dbo.DimFX
+ORDER BY [date] DESC;
