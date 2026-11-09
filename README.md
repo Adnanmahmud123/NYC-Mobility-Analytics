@@ -1,102 +1,267 @@
 # NYC Mobility & Environmental Analytics
 
-An end-to-end analytics project built with Microsoft Fabric, combining NYC Yellow Taxi trip data, air quality measurements, foreign exchange rates, and economic indicators.
+**An End-to-End Data Engineering and Business Intelligence Project using Microsoft Fabric**
 
-## Project Overview
+## 1. Project Overview
 
-This project demonstrates a modern data engineering and analytics workflow using a Medallion Architecture:
+NYC Mobility & Environmental Analytics is an end-to-end data engineering and analytics project built using Microsoft Fabric.
 
-**Bronze → Silver → Gold → Data Warehouse → Semantic Model → Power BI Report**
+The project combines NYC Yellow Taxi trip data, air quality measurements, foreign exchange rates, and economic indicators to provide insights into urban mobility, environmental conditions, and economic trends.
 
-The goal is to analyze NYC taxi mobility patterns alongside environmental and economic indicators.
+The solution follows the Medallion Architecture (Bronze, Silver, and Gold) and integrates data engineering, data warehousing, semantic modeling, and business intelligence.
 
-## Technology Stack
+## 2. Project Objectives
 
-- Microsoft Fabric
-- Fabric Data Engineering Notebooks
-- Fabric Data Pipelines
-- Lakehouse and Warehouse
-- Power BI
-- SQL
-- Python
-- GitHub
+- Build an automated end-to-end data engineering pipeline.
+- Ingest data from multiple external sources.
+- Clean and transform raw datasets.
+- Implement a scalable Medallion Architecture.
+- Build analytical fact and dimension tables.
+- Create a centralized SQL Data Warehouse.
+- Develop a Direct Lake semantic model.
+- Build an interactive Power BI dashboard.
+- Maintain project code and definitions in GitHub.
 
-## Data Sources
+## 3. Technology Stack
 
-- NYC Yellow Taxi trip data
-- OpenAQ PM2.5 air quality measurements
-- European Central Bank (ECB) exchange rates
-- World Bank GDP indicators
-- NYC Taxi Zone lookup data
+| Technology | Purpose |
+|---|---|
+| Microsoft Fabric | Unified analytics platform |
+| Fabric Lakehouse | Data storage |
+| Fabric Notebooks | Data ingestion and transformation |
+| Fabric Data Pipelines | Workflow orchestration |
+| Python | Data processing |
+| PySpark | Large-scale data transformation |
+| SQL | Data analysis and warehouse queries |
+| Power BI | Interactive reporting |
+| Direct Lake | Semantic model storage mode |
+| GitHub | Version control and source backup |
 
-## Architecture
+## 4. Data Sources
 
-1. **Bronze:** Raw source data ingestion.
-2. **Silver:** Data cleaning, transformation, and validation.
-3. **Gold:** Analytical fact and dimension tables.
-4. **Warehouse:** SQL-based analytical views and reporting tables.
-5. **Semantic Model:** Relationships and analytical measures.
-6. **Dashboard:** Interactive visualizations and filtering.
+The project integrates the following data sources:
 
-## Main Gold Tables
+### NYC Yellow Taxi
+Provides taxi trip records, including pickup dates, locations, passengers, distances, and fare information.
+
+### OpenAQ
+Provides PM2.5 air quality measurements for environmental analysis.
+
+### European Central Bank (ECB)
+Provides foreign exchange rates used for currency conversion and financial analysis.
+
+### World Bank
+Provides GDP indicators for economic trend analysis.
+
+### NYC Taxi Zone Lookup
+Provides taxi zone identifiers and location information for geographic analysis.
+
+## 5. Data Architecture
+
+The project follows the Medallion Architecture.
+
+**Bronze → Silver → Gold → Data Warehouse → Semantic Model → Power BI Dashboard**
+
+### Bronze Layer
+- Ingest raw NYC Yellow Taxi data.
+- Ingest OpenAQ air quality measurements.
+- Ingest ECB exchange rate data.
+- Ingest World Bank GDP indicators.
+- Ingest NYC Taxi Zone lookup data.
+
+### Silver Layer
+- Clean and transform raw datasets.
+- Handle missing and invalid values.
+- Standardize data types.
+- Prepare analytical datasets.
+
+### Gold Layer
+Create business-ready fact and dimension tables.
+
+## 6. Gold Data Model
+
+### Fact Tables
 
 | Table | Description |
 |---|---|
-| FactTaxiDaily | Daily taxi activity and revenue |
-| FactAirQualityDaily | Daily PM2.5 measurements |
-| DimDate | Date dimension |
-| DimZone | NYC taxi zone dimension |
-| DimFX | Foreign exchange rates |
-| DimGDP | GDP indicators |
-| DimYear | Year dimension |
+| FactTaxiDaily | Daily taxi activity, revenue, distance, and passenger metrics |
+| FactAirQualityDaily | Daily PM2.5 air quality measurements |
 
-## Dashboard Features
+### Dimension Tables
+
+| Table | Description |
+|---|---|
+| DimDate | Calendar and date attributes |
+| DimZone | NYC taxi zone information |
+| DimFX | Foreign exchange rates |
+| DimGDP | GDP economic indicators |
+| DimYear | Year-based analytical dimension |
+
+## 7. Data Warehouse
+
+The project uses a Microsoft Fabric Data Warehouse for centralized analytical querying.
+
+SQL views support reporting and analytical use cases, including:
+
+- Taxi revenue converted between USD and EUR.
+- Taxi activity analysis.
+- Geographic revenue analysis.
+- Foreign exchange rate analysis.
+
+## 8. Semantic Model
+
+A Direct Lake semantic model connects the Gold analytical tables.
+
+The model includes relationships between fact and dimension tables to support interactive reporting.
+
+Key analytical measures include:
 
 - Total Trips
 - Total Revenue
 - Total Passengers
 - Average Fare
-- Daily Average PM2.5
+- Average Trip Distance
+- Average Trip Duration
+- Average PM2.5
+
+## 9. Power BI Dashboard
+
+**Dashboard Title:** NYC Mobility & Environmental Analytics Dashboard
+
+The dashboard focuses on:
+
+- Total Taxi Trips
+- Total Revenue
+- Total Passengers
+- Average Fare
 - Taxi Trips by Borough
-- Daily Taxi Trips Trend
 - Revenue by Borough
 - Daily Taxi Demand
-- USD per EUR Exchange Rate Trend
-- GDP Trend by Year
-- GDP Growth Trend
-- Year and Borough slicers
+- Daily Taxi Activity Trends
+- Air Quality and PM2.5 Analysis
+- USD/EUR Exchange Rate Trends
+- GDP Trends and Economic Indicators
 
-## Pipeline Orchestration
+Interactive filters support analytical exploration by date, year, and borough where applicable.
 
-The master pipeline `PL_NYC_Mobility_Master` coordinates 17 activities covering ingestion, cleaning, Gold transformations, and warehouse loading.
+## 10. Pipeline Orchestration
 
-## Repository Structure
+The project includes a master Fabric Data Pipeline:
+
+`PL_NYC_Mobility_Master`
+
+The master pipeline coordinates 17 activities, including:
+
+- NYC Taxi ingestion and transformation.
+- OpenAQ ingestion and transformation.
+- ECB exchange rate ingestion and transformation.
+- World Bank GDP ingestion and transformation.
+- NYC Taxi Zone ingestion and transformation.
+- Gold dimension and fact table creation.
+- Warehouse loading.
+
+Existing child pipelines:
+
+- `PL_Ingest_NYC_Taxi`
+- `PL_Load_Gold_To_Warehouse`
+
+The pipeline definition is maintained in the repository as a JSON backup.
+
+## 11. Repository Structure
 
 ```text
 NYC-Mobility-Analytics/
 │
 ├── README.md
-├── pipeline-content.json
-├── *.ipynb
 │
-└── NYC_Mobility_SQL/
-    ├── 01_TaxiRevenue_USD_EUR.sql
-    └── 02_DimFX_Latest_Records.sql
+├── pipeline-content.json
+│
+├── NB_01_...ipynb
+├── NB_02_...ipynb
+├── NB_03_...ipynb
+├── ...
+├── NB_15_...ipynb
+│
+├── Notebook 1.ipynb
+│
+├── 01_TaxiRevenue_USD_EUR.sql
+│
+└── 02_DimFX_Latest_Records.sql
 ```
 
-*The notebook and pipeline files are maintained as source backups. Their actual filenames and folder locations may vary.*
+*Notebook filenames above are representative. Refer to the actual files in the repository for their exact names.*
 
-## Important Notes
+## 12. SQL Examples
 
-- API keys and credentials must never be committed to GitHub.
+### Taxi Revenue Analysis
+
+```sql
+SELECT TOP 10 *
+FROM dbo.vw_TaxiRevenue_USD_EUR
+ORDER BY date;
+```
+
+### Latest Foreign Exchange Records
+
+```sql
+SELECT TOP 10 *
+FROM dbo.DimFX
+ORDER BY [date] DESC;
+```
+
+## 13. Data Quality and Validation
+
+Data quality checks are performed during the transformation process.
+
+Examples include:
+
+- Checking missing values.
+- Validating taxi trip records.
+- Checking invalid fare values.
+- Validating location identifiers.
+- Checking date coverage.
+- Validating transformed analytical tables.
+
+## 14. Security and Deployment Notes
+
+- API keys and credentials are excluded from the repository.
+- Sensitive configuration values should be stored securely.
 - Pipeline definitions reference existing Fabric workspace item IDs.
-- Verify notebook and pipeline references before redeployment.
-- The dashboard reflects the available source data and its coverage limitations.
+- Notebook and pipeline references must be verified before deployment.
+- The pipeline JSON is a source definition backup, not a standalone deployment executable.
+- External API availability and data coverage may affect pipeline execution.
 
-## Project Status
+## 15. Project Status
 
-Core data ingestion, transformations, warehouse loading, semantic modeling, and dashboard development have been completed. Source-code backup is maintained in this repository.
+The project includes:
 
-## Author
+- Data ingestion workflows.
+- Bronze, Silver, and Gold data layers.
+- Analytical fact and dimension tables.
+- Fabric Data Warehouse.
+- SQL analytical views.
+- Direct Lake semantic model.
+- Power BI dashboard.
+- Master pipeline orchestration.
+- GitHub source backups.
 
-S.M. Adnan Mahmud
+## 16. Future Improvements
+
+Potential future enhancements include:
+
+- Automated data quality monitoring.
+- Improved pipeline failure notifications.
+- Historical data expansion.
+- Additional environmental indicators.
+- Advanced forecasting and predictive analytics.
+- Automated deployment and CI/CD.
+
+## 17. Author
+
+GitHub: [Adnanmahmud123](https://github.com/Adnanmahmud123)
+
+Repository: [NYC-Mobility-Analytics](https://github.com/Adnanmahmud123/NYC-Mobility-Analytics)
+
+---
+
+*Built with Microsoft Fabric, Python, PySpark, SQL, and Power BI.*
