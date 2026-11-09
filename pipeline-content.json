@@ -1,0 +1,459 @@
+{
+  "properties": {
+    "description": "NYC Mobility Analytics master orchestration pipeline. Notebook branches are intentionally serialized to reduce concurrent Spark sessions and avoid Trial Capacity HTTP 430 TooManyRequestsForCapacity errors.",
+    "activities": [
+      {
+        "name": "Invoke_Taxi_Ingestion",
+        "type": "ExecutePipeline",
+        "dependsOn": [],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "72ce9c74-e028-4d2c-9830-a1a97623d784",
+            "type": "PipelineReference"
+          },
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55",
+          "waitOnCompletion": true
+        }
+      },
+      {
+        "name": "Run_Taxi_Silver_Cleaning",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Invoke_Taxi_Ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "8f2dad9d-cbfd-4e83-9c7f-12143679884c",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Gold_Taxi",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Taxi_Silver_Cleaning",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "9fc5afeb-325a-4de3-bfd3-62e3e9d01253",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_OpenAQ_Ingestion",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Gold_Taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "7f3e9c19-8a9e-4ddb-81cc-99656ae6017c",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_OpenAQ_Cleaning",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_OpenAQ_Ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "8e575938-41f7-4edd-ba65-388df53e89dc",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Gold_AirQuality",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_OpenAQ_Cleaning",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "93c805a0-671a-4375-ac72-75eaaa0eaaf0",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_ECB_FX_Ingestion",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Gold_AirQuality",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "bb514b2d-0e59-445d-a8e7-57ee30a6f1cd",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_ECB_FX_Cleaning",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_ECB_FX_Ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "4e33f715-f8cd-446f-9b55-c14746999f1d",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Gold_FX",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_ECB_FX_Cleaning",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "b3d550fc-0ce6-4152-af9b-1c9322f6159b",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_WorldBank_GDP_Ingestion",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Gold_FX",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "ae7f8278-315c-4a84-84d2-1d9ced7a6639",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_GDP_Cleaning",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_WorldBank_GDP_Ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "b33d98fc-836c-4e7b-b5ba-823cd9b7f675",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Gold_GDP",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_GDP_Cleaning",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "86f623f1-c65b-4ada-a2d1-cf8790ce21f1",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Taxi_Zone_Ingestion",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Gold_GDP",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "5ad0cc33-3d13-4002-9c7e-46104a1e4fd8",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Taxi_Zone_Cleaning",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Taxi_Zone_Ingestion",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "366d1543-f60f-434b-b853-6d3147f367cb",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Gold_DimZone_Update",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Taxi_Zone_Cleaning",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_Taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "6e322232-c874-4af2-9994-89adf60464cb",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Run_Gold_DimYear",
+        "type": "TridentNotebook",
+        "dependsOn": [
+          {
+            "activity": "Run_Gold_GDP",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_FX",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_AirQuality",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_Taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_DimZone_Update",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "notebookId": "aba8d89e-9037-405f-a921-c4a8788075ae",
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55"
+        }
+      },
+      {
+        "name": "Invoke_Warehouse_Load",
+        "type": "ExecutePipeline",
+        "dependsOn": [
+          {
+            "activity": "Run_Gold_DimYear",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_DimZone_Update",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_AirQuality",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_Taxi",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_FX",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          },
+          {
+            "activity": "Run_Gold_GDP",
+            "dependencyConditions": [
+              "Succeeded"
+            ]
+          }
+        ],
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 1,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "dbdd73eb-772a-41cd-a12b-ce644c48ce41",
+            "type": "PipelineReference"
+          },
+          "workspaceId": "54e53082-6921-45e5-b473-22e407301c55",
+          "waitOnCompletion": true
+        }
+      }
+    ]
+  }
+}
