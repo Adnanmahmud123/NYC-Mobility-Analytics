@@ -181,8 +181,7 @@ NYC-Mobility-Analytics/
 ├── NB_03_...ipynb
 ├── ...
 ├── NB_15_...ipynb
-│
-├── Notebook 1.ipynb
+├── NB_16_Data_Quality_Validation.ipynb
 │
 ├── 01_TaxiRevenue_USD_EUR.sql
 │
